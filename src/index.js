@@ -4,6 +4,43 @@ const sections = {
     dashboard: `
         <h2>Welcome Back, [User's Name]!</h2>
         <p>Track your progress and stay on top of your health journey. Let’s make today count!</p>
+
+        <div class="quick-stats">
+            <div class="stat-item">
+                <h3>25</h3>
+                <p>Symptoms Logged</p>
+            </div>
+            <div class="stat-item">
+                <h3>10</h3>
+                <p>Trigger-Free Days</p>
+            </div>
+            <div class="stat-item">
+                <h3>Fatigue</h3>
+                <p>Most Common Symptom</p>
+            </div>
+        </div>
+
+        <h3>Recent Entries</h3>
+        <ul class="recent-entries">
+            <li>11/22/2024: Headache - Severity 6</li>
+            <li>11/20/2024: Fatigue - Severity 8</li>
+            <li>11/19/2024: Hives - Severity 5</li>
+        </ul>
+
+        <h3>Your Symptom Trends</h3>
+        <canvas id="symptom-trends-chart"></canvas>
+
+        <h3>Most Common Triggers</h3>
+        <p>Food: High-Histamine (Avocado, Spinach)</p>
+        <p>Environmental: Dust, Perfumes</p>
+
+        <h3>Insights</h3>
+        <p>We noticed that hives tend to occur more often after consuming high-histamine foods. Consider logging meals in detail to refine this correlation.</p>
+
+        <h3>Quick Actions</h3>
+        <button onclick="navigateTo('symptoms')">Log a Symptom</button>
+        <button onclick="navigateTo('analytics')">View Analytics</button>
+    </div>
     `,
     symptoms: `
         <h2>Symptoms</h2>
