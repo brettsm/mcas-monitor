@@ -130,6 +130,15 @@ const sections = {
     analytics: `
         <h2>Analytics</h2>
         <p>Analyze your data to discover trends and insights about your condition.</p>
+        
+        <h3>Symptom Trends</h3>
+        <canvas id="symptom-trend-chart"></canvas>
+
+        <h3>Trigger Categories</h3>
+        <canvas id="trigger-category-chart"></canvas>
+
+        <h3>Resource Summary</h3>
+        <canvas id="resource-summary-chart"></canvas>
     `,
     resources: `
         <h2>Resources</h2>
@@ -187,6 +196,10 @@ function loadContent(section) {
             contentDiv.innerHTML = sections[section];
             contentDiv.classList.add('loaded'); // Fade-in transition
 
+            if (section === 'analytics') {
+                setupAnalytics();
+            }
+            
             if (section === 'resources') {
                 setupResourceManagement();
             }
@@ -477,6 +490,105 @@ function setupResourceManagement() {
             resourceTableBody.appendChild(row);
         });
     }
+}
+
+function setupAnalytics() {
+    // Sample Data: Replace with real logged data
+    const symptomsData = [
+        { date: '11/20/2024', severity: 6 },
+        { date: '11/21/2024', severity: 7 },
+        { date: '11/22/2024', severity: 8 }
+    ];
+
+    const triggersData = [
+        { category: 'food' },
+        { category: 'environmental' },
+        { category: 'food' }
+    ];
+
+    const resourcesData = [
+        { category: 'articles' },
+        { category: 'tools' },
+        { category: 'tools' }
+    ];
+
+    // Symptom Trends Chart
+    const symptomTrendCtx = document.getElementById('symptom-trend-chart').getContext('2d');
+    new Chart(symptomTrendCtx, {
+        type: 'line',
+        data: {
+            labels: symptomsData.map(entry => entry.date), // Dates
+            datasets: [{
+                label: 'Symptom Severity',
+                data: symptomsData.map(entry => entry.severity), // Severity
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10 // Scale from 0 to 10
+                }
+            }
+        }
+    });
+
+    // Trigger Categories Chart
+    const triggerCategoryCounts = triggersData.reduce((acc, curr) => {
+        acc[curr.category] = (acc[curr.category] || 0) + 1;
+        return acc;
+    }, {});
+    const triggerCategoryCtx = document.getElementById('trigger-category-chart').getContext('2d');
+    new Chart(triggerCategoryCtx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(triggerCategoryCounts),
+            datasets: [{
+                data: Object.values(triggerCategoryCounts),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        }
+    });
+
+    // Resource Summary Chart
+    const resourceCategoryCounts = resourcesData.reduce((acc, curr) => {
+        acc[curr.category] = (acc[curr.category] || 0) + 1;
+        return acc;
+    }, {});
+    const resourceSummaryCtx = document.getElementById('resource-summary-chart').getContext('2d');
+    new Chart(resourceSummaryCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(resourceCategoryCounts),
+            datasets: [{
+                label: 'Resources',
+                data: Object.values(resourceCategoryCounts),
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 }
 
 
