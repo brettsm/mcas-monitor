@@ -34,11 +34,14 @@ navbarLinks.forEach(link => {
         const target = event.target.getAttribute('data-target');
         if(sections[target]) {
             contentDiv.classList.remove('loaded');
+            
+            // Use setTimeout to delay content update until fade-out completes
             setTimeout(() => {
                 contentDiv.innerHTML = sections[target];
+                
+                // Re-add 'loaded' class to trigger fade-in
                 contentDiv.classList.add('loaded');
-            }, 300);
-            contentDiv.innerHTML = sections[target];
+            }, 300); // 
         }
     });
 });
