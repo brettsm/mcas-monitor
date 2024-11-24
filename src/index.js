@@ -3,6 +3,8 @@ import {
     Chart,
     BarController,
     BarElement,
+    PieController,
+    ArcElement,
     LineController,
     LineElement,
     PointElement,
@@ -13,7 +15,7 @@ import {
     Legend
 } from 'chart.js';
 
-Chart.register(LineController, LineElement, BarController, BarElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
+Chart.register(LineController, LineElement, BarController, BarElement, PieController, ArcElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
 
 const sections = {
     dashboard: `
