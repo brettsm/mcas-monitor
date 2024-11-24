@@ -2,8 +2,8 @@ import './style.css';
 
 const sections = {
     dashboard: `
-        <h2>Dashboard</h2>
-        <p>Welcome to your MCAS Tracker dashboard! View your latest updates and progress here.</p>
+        <h2>Welcome Back, [User's Name]!</h2>
+        <p>Track your progress and stay on top of your health journey. Let’s make today count!</p>
     `,
     symptoms: `
         <h2>Symptoms</h2>
@@ -53,5 +53,11 @@ navbarLinks.forEach(link => {
 window.addEventListener('popstate', (event) => {
     const section = event.state?.section || 'dashboard';
     loadContent(section);
+});
+
+window.addEventListener('load', () => {
+    const initialSection = location.hash.replace('#', '') || 'dashboard'; // Default to 'dashboard'
+    history.replaceState({ section: initialSection }, '', `#${initialSection}`);
+    loadContent(initialSection);
 });
 
