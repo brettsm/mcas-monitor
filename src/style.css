@@ -42,3 +42,49 @@ body {
 #content.loaded {
     opacity: 1;
 }
+
+.dashboard {
+    padding: 2rem;
+}
+
+.quick-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+    background-color: #f7f7f7;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recent-entries {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.recent-entries li {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button {
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #2a3d45;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ffc107;
+}

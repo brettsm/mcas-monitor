@@ -1,4 +1,17 @@
 import './style.css';
+import {
+    Chart,
+    LineController,
+    LineElement,
+    PointElement,
+    LinearScale,
+    CategoryScale,
+    Title,
+    Tooltip,
+    Legend
+} from 'chart.js';
+
+Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
 
 const sections = {
     dashboard: `
@@ -71,6 +84,35 @@ function loadContent(section) {
         setTimeout(() => {
             contentDiv.innerHTML = sections[section];
             contentDiv.classList.add('loaded'); // Fade-in transition
+
+            // Initialize the chart if the dashboard is loaded
+            if (section === 'dashboard') {
+                const canvas = document.getElementById('symptom-trends-chart');
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['11/18', '11/19', '11/20', '11/21', '11/22'], // Dates
+                            datasets: [{
+                                label: 'Symptom Severity',
+                                data: [3, 5, 8, 6, 4], // Example symptom severity data
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 2,
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 10 // Scale from 0 to 10
+                                }
+                            }
+                        }
+                    });
+                }
+            }
         }, 300);
     }
 }
@@ -97,4 +139,5 @@ window.addEventListener('load', () => {
     history.replaceState({ section: initialSection }, '', `#${initialSection}`);
     loadContent(initialSection);
 });
+
 
