@@ -37,3 +37,9 @@ navbarLinks.forEach(link => {
         }
     });
 });
+
+//Handle back/forward navigation
+window.addEventListener('popstate', (event) => {
+    const section = event.state?.section || 'dashboard';
+    contentDiv.innerHTML = sections[section];
+});
