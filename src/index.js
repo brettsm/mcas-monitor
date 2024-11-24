@@ -92,6 +92,38 @@ const sections = {
     triggers: `
         <h2>Triggers</h2>
         <p>Identify potential triggers and manage your environment to avoid flares.</p>
+        
+        <h3>Log a Trigger</h3>
+        <form id="trigger-form">
+            <label for="trigger-name">Trigger:</label>
+            <input type="text" id="trigger-name" placeholder="e.g., Dust, Perfume" required />
+
+            <label for="trigger-category">Category:</label>
+            <select id="trigger-category" required>
+                <option value="food">Food</option>
+                <option value="environmental">Environmental</option>
+                <option value="emotional">Emotional</option>
+            </select>
+
+            <button type="submit">Log Trigger</button>
+        </form>
+
+        <h3>Logged Triggers</h3>
+        <table id="trigger-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Trigger</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Logged triggers will appear here -->
+            </tbody>
+        </table>
+
+        <h3>Trigger Summary</h3>
+        <canvas id="trigger-summary-chart"></canvas>
     `,
     analytics: `
         <h2>Analytics</h2>
@@ -115,7 +147,12 @@ function loadContent(section) {
             contentDiv.innerHTML = sections[section];
             contentDiv.classList.add('loaded'); // Fade-in transition
 
-            //Setup system logging if the dashboard is loaded
+            // Setup system trigger logging
+            if (section === 'triggers') {
+                setupTriggerLogging();
+            }
+
+            // Setup system logging if the dashboard is loaded
             if (section === 'symptoms') {
                 setupSymptomLogging();
             }
@@ -244,6 +281,70 @@ function setupSymptomLogging() {
         // Update chart data
         chart.data.labels = Object.keys(symptomCounts);
         chart.data.datasets[0].data = Object.values(symptomCounts);
+        chart.update();
+    }
+}
+
+// trigger page setup
+function setupTriggerLogging() {
+    const triggerForm = document.getElementById('trigger-form');
+    const triggerTableBody = document.querySelector('#trigger-table tbody');
+    const triggersData = [];
+
+    triggerForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const triggerName = document.getElementById('trigger-name').value.trim();
+        const triggerCategory = document.getElementById('trigger-category').value;
+        const triggerDate = new Date().toLocaleDateString();
+
+        triggersData.push({ date: triggerDate, name: triggerName, category: triggerCategory });
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${triggerDate}</td>
+            <td>${triggerName}</td>
+            <td>${triggerCategory}</td>
+        `;
+        triggerTableBody.appendChild(row);
+
+        updateTriggerChart(triggersData);
+
+        triggerForm.reset();
+    });
+
+    const canvas = document.getElementById('trigger-summary-chart');
+    const ctx = canvas.getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Triggers',
+                data: [],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        }
+    });
+
+    function updateTriggerChart(data) {
+        const categoryCounts = data.reduce((acc, curr) => {
+            acc[curr.category] = (acc[curr.category] || 0) + 1;
+            return acc;
+        }, {});
+
+        chart.data.labels = Object.keys(categoryCounts);
+        chart.data.datasets[0].data = Object.values(categoryCounts);
         chart.update();
     }
 }
