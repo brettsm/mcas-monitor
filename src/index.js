@@ -134,6 +134,44 @@ const sections = {
     resources: `
         <h2>Resources</h2>
         <p>Access guides, tools, and support networks to help manage your symptoms effectively.</p>
+        
+        <h3>Add a Resource</h3>
+        <form id="resource-form">
+            <label for="resource-title">Title:</label>
+            <input type="text" id="resource-title" placeholder="e.g., Low-Histamine Food Guide" required />
+
+            <label for="resource-link">Link:</label>
+            <input type="url" id="resource-link" placeholder="https://example.com" required />
+
+            <label for="resource-category">Category:</label>
+            <select id="resource-category" required>
+                <option value="articles">Articles</option>
+                <option value="tools">Tools</option>
+                <option value="support">Support Networks</option>
+            </select>
+
+            <button type="submit">Add Resource</button>
+        </form>
+
+        <h3>Search Resources</h3>
+        <input type="text" id="resource-search" placeholder="Search resources..." />
+
+        <h3>All Resources</h3>
+        <table id="resource-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Resources will appear here -->
+            </tbody>
+        </table>
+
+        <h3>Resource Summary</h3>
+        <canvas id="resource-summary-chart"></canvas>
     `
 };
 
@@ -148,6 +186,10 @@ function loadContent(section) {
         setTimeout(() => {
             contentDiv.innerHTML = sections[section];
             contentDiv.classList.add('loaded'); // Fade-in transition
+
+            if (section === 'resources') {
+                setupResourceManagement();
+            }
 
             // Setup system trigger logging
             if (section === 'triggers') {
@@ -350,5 +392,92 @@ function setupTriggerLogging() {
         chart.update();
     }
 }
+
+
+function setupResourceManagement() {
+    const resourceForm = document.getElementById('resource-form');
+    const resourceTableBody = document.querySelector('#resource-table tbody');
+    const resourceSearch = document.getElementById('resource-search');
+    const resourcesData = [];
+
+    resourceForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const resourceTitle = document.getElementById('resource-title').value.trim();
+        const resourceLink = document.getElementById('resource-link').value.trim();
+        const resourceCategory = document.getElementById('resource-category').value;
+
+        resourcesData.push({ title: resourceTitle, link: resourceLink, category: resourceCategory });
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${resourceTitle}</td>
+            <td>${resourceCategory}</td>
+            <td><a href="${resourceLink}" target="_blank">Visit</a></td>
+        `;
+        resourceTableBody.appendChild(row);
+
+        updateResourceChart(resourcesData);
+
+        resourceForm.reset();
+    });
+
+    resourceSearch.addEventListener('input', (event) => {
+        const query = event.target.value.toLowerCase();
+        const filteredResources = resourcesData.filter(resource => 
+            resource.title.toLowerCase().includes(query) || resource.category.toLowerCase().includes(query)
+        );
+        renderResourceTable(filteredResources);
+    });
+
+    const canvas = document.getElementById('resource-summary-chart');
+    const ctx = canvas.getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Resources',
+                data: [],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        }
+    });
+
+    function updateResourceChart(data) {
+        const categoryCounts = data.reduce((acc, curr) => {
+            acc[curr.category] = (acc[curr.category] || 0) + 1;
+            return acc;
+        }, {});
+
+        chart.data.labels = Object.keys(categoryCounts);
+        chart.data.datasets[0].data = Object.values(categoryCounts);
+        chart.update();
+    }
+
+    function renderResourceTable(data) {
+        resourceTableBody.innerHTML = '';
+        data.forEach(resource => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${resource.title}</td>
+                <td>${resource.category}</td>
+                <td><a href="${resource.link}" target="_blank">Visit</a></td>
+            `;
+            resourceTableBody.appendChild(row);
+        });
+    }
+}
+
 
 
