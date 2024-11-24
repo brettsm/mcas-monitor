@@ -17,6 +17,8 @@ import {
 
 Chart.register(LineController, LineElement, BarController, BarElement, PieController, ArcElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
 
+//TODO: Add login functionality and a backend for continuity
+
 const sections = {
     dashboard: `
         <h2>Welcome Back, [User's Name]!</h2>
