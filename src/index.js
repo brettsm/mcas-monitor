@@ -33,6 +33,11 @@ navbarLinks.forEach(link => {
         event.preventDefault();
         const target = event.target.getAttribute('data-target');
         if(sections[target]) {
+            contentDiv.classList.remove('loaded');
+            setTimeout(() => {
+                contentDiv.innerHTML = sections[target];
+                contentDiv.classList.add('loaded');
+            }, 300);
             contentDiv.innerHTML = sections[target];
         }
     });
@@ -43,3 +48,4 @@ window.addEventListener('popstate', (event) => {
     const section = event.state?.section || 'dashboard';
     contentDiv.innerHTML = sections[section];
 });
+
