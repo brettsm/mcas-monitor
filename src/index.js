@@ -27,28 +27,31 @@ const sections = {
 const navbarLinks = document.querySelectorAll('.navbar a');
 const contentDiv = document.getElementById('content');
 
+function loadContent(section) {
+    if (sections[section]) {
+        // Fade-out transition
+        contentDiv.classList.remove('loaded');
+        setTimeout(() => {
+            contentDiv.innerHTML = sections[section];
+            contentDiv.classList.add('loaded'); // Fade-in transition
+        }, 300);
+    }
+}
+
 navbarLinks.forEach(link => {
     link.addEventListener('click', (event) => {
-        console.log(event.target.getAttribute('data-target'));
         event.preventDefault();
         const target = event.target.getAttribute('data-target');
-        if(sections[target]) {
-            contentDiv.classList.remove('loaded');
-            
-            // Use setTimeout to delay content update until fade-out completes
-            setTimeout(() => {
-                contentDiv.innerHTML = sections[target];
-                
-                // Re-add 'loaded' class to trigger fade-in
-                contentDiv.classList.add('loaded');
-            }, 300); // 
-        }
+        
+        // Push state to browser history
+        history.pushState({ section: target }, '', `#${target}`);
+        loadContent(target);
     });
 });
 
 //Handle back/forward navigation
 window.addEventListener('popstate', (event) => {
     const section = event.state?.section || 'dashboard';
-    contentDiv.innerHTML = sections[section];
+    loadContent(section);
 });
 
