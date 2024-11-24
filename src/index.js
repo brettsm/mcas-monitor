@@ -1,6 +1,8 @@
 import './style.css';
 import {
     Chart,
+    BarController,
+    BarElement,
     LineController,
     LineElement,
     PointElement,
@@ -11,7 +13,7 @@ import {
     Legend
 } from 'chart.js';
 
-Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
+Chart.register(LineController, LineElement, BarController, BarElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
 
 const sections = {
     dashboard: `
@@ -58,6 +60,34 @@ const sections = {
     symptoms: `
         <h2>Symptoms</h2>
         <p>Log your symptoms to keep track of patterns and changes over time.</p>
+        
+        <h3>Log a Symptom</h3>
+        <form id="symptom-form">
+            <label for="symptom-name">Symptom:</label>
+            <input type="text" id="symptom-name" placeholder="e.g., Headache" required />
+
+            <label for="symptom-severity">Severity (1-10):</label>
+            <input type="number" id="symptom-severity" min="1" max="10" required />
+
+            <button type="submit">Log Symptom</button>
+        </form>
+
+        <h3>Logged Symptoms</h3>
+        <table id="symptom-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Symptom</th>
+                    <th>Severity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Logged symptoms will appear here -->
+            </tbody>
+        </table>
+
+        <h3>Symptoms Overview</h3>
+        <canvas id="symptom-overview-chart"></canvas>
     `,
     triggers: `
         <h2>Triggers</h2>
@@ -85,6 +115,10 @@ function loadContent(section) {
             contentDiv.innerHTML = sections[section];
             contentDiv.classList.add('loaded'); // Fade-in transition
 
+            //Setup system logging if the dashboard is loaded
+            if (section === 'symptoms') {
+                setupSymptomLogging();
+            }
             // Initialize the chart if the dashboard is loaded
             if (section === 'dashboard') {
                 const canvas = document.getElementById('symptom-trends-chart');
@@ -139,5 +173,79 @@ window.addEventListener('load', () => {
     history.replaceState({ section: initialSection }, '', `#${initialSection}`);
     loadContent(initialSection);
 });
+
+
+
+//Symptom functions
+function setupSymptomLogging() {
+    const symptomForm = document.getElementById('symptom-form');
+    const symptomTableBody = document.querySelector('#symptom-table tbody');
+    const symptomsData = []; // Array to hold logged symptoms
+
+    symptomForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        
+        // Get form values
+        const symptomName = document.getElementById('symptom-name').value.trim();
+        const symptomSeverity = parseInt(document.getElementById('symptom-severity').value.trim(), 10);
+        const symptomDate = new Date().toLocaleDateString();
+
+        // Save the symptom
+        symptomsData.push({ date: symptomDate, name: symptomName, severity: symptomSeverity });
+
+        // Add the symptom to the table
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${symptomDate}</td>
+            <td>${symptomName}</td>
+            <td>${symptomSeverity}</td>
+        `;
+        symptomTableBody.appendChild(row);
+
+        // Update the chart
+        updateSymptomsChart(symptomsData);
+
+        // Clear the form
+        symptomForm.reset();
+    });
+
+    // Initialize the chart
+    const canvas = document.getElementById('symptom-overview-chart');
+    const ctx = canvas.getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Symptom Severity',
+                data: [],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10
+                }
+            }
+        }
+    });
+
+    function updateSymptomsChart(data) {
+        // Aggregate severity by symptom
+        const symptomCounts = data.reduce((acc, curr) => {
+            acc[curr.name] = (acc[curr.name] || 0) + curr.severity;
+            return acc;
+        }, {});
+
+        // Update chart data
+        chart.data.labels = Object.keys(symptomCounts);
+        chart.data.datasets[0].data = Object.values(symptomCounts);
+        chart.update();
+    }
+}
 
 
