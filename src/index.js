@@ -617,6 +617,7 @@ function setupLogin() {
     const loginError = document.getElementById('login-error');
 
     // Dummy user data for validation
+    //TODO: replace dummy user data with API call or database access
     const validUser = { username: 'user123', password: 'password123' };
 
     loginForm.addEventListener('submit', (event) => {
