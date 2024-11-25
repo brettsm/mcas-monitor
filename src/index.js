@@ -183,6 +183,21 @@ const sections = {
 
         <h3>Resource Summary</h3>
         <canvas id="resource-summary-chart"></canvas>
+    `,
+    login: `
+        <div class="login-container">
+            <h2>Login</h2>
+            <form id="login-form">
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Enter your username" required />
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter your password" required />
+
+                <button type="submit">Login</button>
+            </form>
+            <p id="login-error" class="error-message" style="display: none;">Invalid username or password. Please try again.</p>
+        </div>
     `
 };
 
@@ -214,6 +229,10 @@ function loadContent(section) {
             // Setup system logging if the dashboard is loaded
             if (section === 'symptoms') {
                 setupSymptomLogging();
+            }
+
+            if (section === 'login') {
+                setupLogin();
             }
             // Initialize the chart if the dashboard is loaded
             if (section === 'dashboard') {
@@ -592,6 +611,30 @@ function setupAnalytics() {
         }
     });
 }
+
+function setupLogin() {
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+
+    // Dummy user data for validation
+    const validUser = { username: 'user123', password: 'password123' };
+
+    loginForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if (username === validUser.username && password === validUser.password) {
+            // Successful login
+            loadContent('dashboard'); // Redirect to dashboard
+        } else {
+            // Show error message
+            loginError.style.display = 'block';
+        }
+    });
+}
+
 
 
 
